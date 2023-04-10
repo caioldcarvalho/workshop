@@ -1,0 +1,21 @@
+{
+    "name": "caio/workshop",
+    "description": "Environment to develop prototypes",
+    "type": "project",
+    "require": {
+        "composer/composer": "^2.5",
+        "ext-gd": "*"
+    },
+    "license": "AGPL",
+    "autoload": {
+        "psr-4": {
+            "Caio\\Workshop\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Caio Carvalho",
+            "email": "caioldcarvalho@protonmail.com"
+        }
+    ]
+}

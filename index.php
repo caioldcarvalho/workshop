@@ -7,6 +7,6 @@
     <title>Index</title>
 </head>
 <body>
-    <?php include_once 'form.php'; ?>
+    <?php include_once 'src/form.php'; ?>
 </body>
 </html>
