@@ -1,5 +1,9 @@
 <?php
 
+namespace Caio\Workshop;
+
+require 'vendor/autoload.php';
+
 function get_miniatures(): array
 {
     // Quantity detected automatically, just create as many sets of dimentions as needed.
@@ -36,26 +40,57 @@ function sanitize_name(string $name): string
     return $str;
 }
 
-function save_miniatures($miniatures)
+function save_miniatures($miniatures, $name, $dir, $original_image, $original_width, $original_height): void
 {
+    // name[0] = file name without extenxion
+    // name[1] = file extension
+
     foreach ($miniatures as $miniature) {
-        echo $miniature['width'];
-        echo $miniature['height'];
+        $miniature_name = $dir . $name[0] . $miniature['width'] . "x" . $miniature['height'];
+
+        $new_width  = $miniature['width'];
+        $new_height = $miniature['height'];
+
+        $new_image = imagecreatetruecolor($new_width, $new_height);
+
+        // Resize the original image to the new dimensions
+        imagecopyresampled($new_image, $original_image, 0, 0, 0, 0, $new_width, $new_height, $original_width, $original_height);
+
+        // Output the resized image
+        imagejpeg($new_image, $miniature_name . ".jpg", 90);
+
+        imagedestroy($new_image);    
     }
+
 }
 
 function save_file($file, $name, $img_dir, $miniatures = array()): void
 {
-    $current_dir = $img_dir . $name[0];
-    if (!is_dir($current_dir)) {
-        mkdir($current_dir, 0777, true);
+    clearstatcache();
+    $relative_path = getcwd() . "/" . "img/" . $name[0] . "/";
+    if (!is_dir($relative_path)) {
+        mkdir($relative_path, 0766, true);
     }
+
+    $full_file_name = $relative_path . $name[0] . "." . $name[1];
+    
+    $original_image = match ($name[1]) {
+        "png" => imagecreatefrompng($file["tmp_name"]),
+        "jpg" => imagecreatefromjpeg($file["tmp_name"]),
+        "jpeg" => imagecreatefromjpeg($file["tmp_name"]),
+        "webp" => imagecreatefromwebp($file["tmp_name"])
+    };
+    
+    $width  = imagesx($original_image);
+    $height = imagesy($original_image);
+    
+    imagejpeg($original_image, $full_file_name);
 
     if (!empty($miniatures)) {
-        save_miniatures($miniatures);
+        save_miniatures($miniatures, $name, $relative_path, $original_image, $width, $height);
     }
 
-
+    imagedestroy($original_image);
 }
 
 define("ROOT_DIR", "/opt/htdocs/workshop/");
@@ -69,4 +104,11 @@ function process_single_file(array $file)
     $name[0]    = sanitize_name($name[0]);
     save_file($file, $name, IMG_DIR, $miniatures);
     echo "$name[0].$name[1]";
+}
+
+function process_all_files(array $files): void
+{
+    foreach ($files as $file) {
+        process_single_file($file);
+    }
 }
