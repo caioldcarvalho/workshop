@@ -71,13 +71,13 @@ function saveMiniatures($miniatures, $name, $dir, $original_image, $original_wid
 function saveFile($file, $name, $miniatures = array()): void
 {
     clearstatcache();
+
     $relative_path = getcwd() . "/" . "img/" . $name[0] . "/";
+
     if (!is_dir($relative_path)) {
         mkdir($relative_path, 0766, true);
     }
 
-    $full_file_name = $relative_path . $name[0] . "." . $name[1];
-    
     $original_image = match ($name[1]) {
         "png" => imagecreatefrompng($file["tmp_name"]),
         "jpg" => imagecreatefromjpeg($file["tmp_name"]),
@@ -88,6 +88,8 @@ function saveFile($file, $name, $miniatures = array()): void
     $width  = imagesx($original_image);
     $height = imagesy($original_image);
     
+    $full_file_name = $relative_path . $name[0] . "." . $name[1];
+
     imagejpeg($original_image, $full_file_name);
 
     if (!empty($miniatures)) {
