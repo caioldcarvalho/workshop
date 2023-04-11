@@ -4,7 +4,7 @@ namespace Caio\Workshop;
 
 require 'vendor/autoload.php';
 
-function get_miniatures(): array
+function getMiniatures(): array
 {
     // Quantity detected automatically, just create as many sets of width/height as needed.
     $miniatures = [
@@ -16,7 +16,7 @@ function get_miniatures(): array
     return $miniatures;
 }
 
-function split_name_from_extension(string $file_name): array
+function splitNamFromExtension(string $file_name): array
 {
     $extension                  = pathinfo($file_name, PATHINFO_EXTENSION);
     $filename_without_extension = pathinfo($file_name, PATHINFO_FILENAME);
@@ -24,7 +24,7 @@ function split_name_from_extension(string $file_name): array
     return array($filename_without_extension, $extension);
 }
 
-function sanitize_name(string $name): string
+function sanitizeName(string $name): string
 {
     $str = strtolower($name);
     $str = htmlspecialchars($str);
@@ -36,13 +36,14 @@ function sanitize_name(string $name): string
     $str = preg_replace('/[ç]/u', 'c', $str);
     $str = preg_replace('/[\/\\\;\:\(\)\*\&\%\$\#\@\!\=\+\.\,\?\>\<]/u', '', $str);
     $str = str_replace(' ', '-', $str);
+    $str = str_replace('_', '-', $str);
     $str = str_replace('---', '-', $str);
     $str = str_replace('--', '-', $str);
     $str = html_entity_decode($str);
     return $str;
 }
 
-function save_miniatures($miniatures, $name, $dir, $original_image, $original_width, $original_height): void
+function saveMiniatures($miniatures, $name, $dir, $original_image, $original_width, $original_height): void
 {
     // name[0] = file name without extenxion
     // name[1] = file extension
@@ -66,7 +67,7 @@ function save_miniatures($miniatures, $name, $dir, $original_image, $original_wi
 
 }
 
-function save_file($file, $name, $img_dir, $miniatures = array()): void
+function saveFile($file, $name, $img_dir, $miniatures = array()): void
 {
     clearstatcache();
     $relative_path = getcwd() . "/" . "img/" . $name[0] . "/";
@@ -89,7 +90,7 @@ function save_file($file, $name, $img_dir, $miniatures = array()): void
     imagejpeg($original_image, $full_file_name);
 
     if (!empty($miniatures)) {
-        save_miniatures($miniatures, $name, $relative_path, $original_image, $width, $height);
+        saveMiniatures($miniatures, $name, $relative_path, $original_image, $width, $height);
     }
 
     imagedestroy($original_image);
@@ -98,19 +99,19 @@ function save_file($file, $name, $img_dir, $miniatures = array()): void
 define("ROOT_DIR", "/opt/htdocs/workshop/");
 define("IMG_DIR", ROOT_DIR . "img/");
 
-function process_single_file(array $file)
+function processSingleFile(array $file)
 {
     // Please, define how many miniatures you need, and their dimensions.
-    $miniatures = get_miniatures();
-    $name       = split_name_from_extension($file['name']);
-    $name[0]    = sanitize_name($name[0]);
-    save_file($file, $name, IMG_DIR, $miniatures);
+    $miniatures = getMiniatures();
+    $name       = splitNamFromExtension($file['name']);
+    $name[0]    = sanitizeName($name[0]);
+    saveFile($file, $name, IMG_DIR, $miniatures);
     echo "$name[0].$name[1]";
 }
 
-function process_all_files(array $files): void
+function processAllFiles(array $files): void
 {
     foreach ($files as $file) {
-        process_single_file($file);
+        processSingleFile($file);
     }
 }

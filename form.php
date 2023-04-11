@@ -8,7 +8,7 @@ require 'vendor/autoload.php';
 require 'src/functions.php';
 
 
-isset($_FILES) ? process_all_files($_FILES) : 'roi';
+isset($_FILES) ? processAllFiles($_FILES) : 'roi';
 
 ?>
 
