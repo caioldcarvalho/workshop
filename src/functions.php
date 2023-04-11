@@ -6,7 +6,7 @@ require 'vendor/autoload.php';
 
 function get_miniatures(): array
 {
-    // Quantity detected automatically, just create as many sets of dimentions as needed.
+    // Quantity detected automatically, just create as many sets of width/height as needed.
     $miniatures = [
         [
             'width' => 360,
@@ -16,7 +16,7 @@ function get_miniatures(): array
     return $miniatures;
 }
 
-function split_name_from_extension(string &$file_name): array
+function split_name_from_extension(string $file_name): array
 {
     $extension                  = pathinfo($file_name, PATHINFO_EXTENSION);
     $filename_without_extension = pathinfo($file_name, PATHINFO_FILENAME);
@@ -31,11 +31,13 @@ function sanitize_name(string $name): string
     $str = preg_replace('/[áãàäâª]/u', 'a', $str);
     $str = preg_replace('/[éèêë]/u', 'e', $str);
     $str = preg_replace('/[íìîï]/u', 'i', $str);
-    $str = preg_replace('/[óòôõö]/u', 'o', $str);
+    $str = preg_replace('/[óòôõöº°]/u', 'o', $str);
     $str = preg_replace('/[úùûü]/u', 'u', $str);
     $str = preg_replace('/[ç]/u', 'c', $str);
-    $str = preg_replace('/[\/\\\;\:\(\)\*\&\%\$\#\@\!\=\+\.\,]/u', '', $str);
+    $str = preg_replace('/[\/\\\;\:\(\)\*\&\%\$\#\@\!\=\+\.\,\?\>\<]/u', '', $str);
     $str = str_replace(' ', '-', $str);
+    $str = str_replace('---', '-', $str);
+    $str = str_replace('--', '-', $str);
     $str = html_entity_decode($str);
     return $str;
 }
@@ -46,7 +48,7 @@ function save_miniatures($miniatures, $name, $dir, $original_image, $original_wi
     // name[1] = file extension
 
     foreach ($miniatures as $miniature) {
-        $miniature_name = $dir . $name[0] . $miniature['width'] . "x" . $miniature['height'];
+        $miniature_name = $dir . $name[0] . "-" . $miniature['width'] . "x" . $miniature['height'];
 
         $new_width  = $miniature['width'];
         $new_height = $miniature['height'];
