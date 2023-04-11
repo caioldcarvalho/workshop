@@ -6,7 +6,8 @@ require 'vendor/autoload.php';
 
 function getMiniatures(): array
 {
-    // Quantity detected automatically, just create as many sets of width/height as needed.
+    // Quantity detected automatically, just create as many sets of width/height
+    // as you needed
     $miniatures = [
         [
             'width' => 360,
@@ -67,7 +68,7 @@ function saveMiniatures($miniatures, $name, $dir, $original_image, $original_wid
 
 }
 
-function saveFile($file, $name, $img_dir, $miniatures = array()): void
+function saveFile($file, $name, $miniatures = array()): void
 {
     clearstatcache();
     $relative_path = getcwd() . "/" . "img/" . $name[0] . "/";
@@ -96,16 +97,13 @@ function saveFile($file, $name, $img_dir, $miniatures = array()): void
     imagedestroy($original_image);
 }
 
-define("ROOT_DIR", "/opt/htdocs/workshop/");
-define("IMG_DIR", ROOT_DIR . "img/");
-
 function processSingleFile(array $file)
 {
     // Please, define how many miniatures you need, and their dimensions.
     $miniatures = getMiniatures();
     $name       = splitNamFromExtension($file['name']);
     $name[0]    = sanitizeName($name[0]);
-    saveFile($file, $name, IMG_DIR, $miniatures);
+    saveFile($file, $name, $miniatures);
     echo "$name[0].$name[1]";
 }
 
@@ -115,3 +113,5 @@ function processAllFiles(array $files): void
         processSingleFile($file);
     }
 }
+
+// End of File
