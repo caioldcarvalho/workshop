@@ -1,3 +1,15 @@
+<?php
+
+namespace Caio\Workshop;
+
+require 'vendor/autoload.php';
+
+require 'src/functions.php';
+
+processAllFiles($_FILES) ?? 'Insira um arquivo';
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -9,7 +21,11 @@
 </head>
 
 <body>
-    <?php include_once 'form.php'; ?>
+    <?php
+        include_once 'form.php';
+    ?>
 </body>
 
 </html>
+
+<!-- End of File -->
