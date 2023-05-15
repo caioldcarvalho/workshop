@@ -4,7 +4,8 @@
     "type": "project",
     "require": {
         "composer/composer": "^2.5",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "intervention/image": "^2.7"
     },
     "license": "AGPL",
     "autoload": {
