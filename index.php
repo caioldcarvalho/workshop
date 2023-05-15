@@ -2,11 +2,15 @@
 
 namespace Caio\Workshop;
 
+use Intervention\Image\ImageManagerStatic as Image;
+
 require 'vendor/autoload.php';
 
-require 'src/functions.php';
+$file = new \Caio\Workshop\ImageFile;
 
-processAllFiles($_FILES) ?? 'Insira um arquivo';
+Image::configure(['driver' => 'gd']);
+
+isset($_FILES['files']) ? $file->processAllFiles($_FILES['files']) : 'Insira um arquivo';
 
 ?>
 
