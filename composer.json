@@ -5,7 +5,8 @@
     "require": {
         "composer/composer": "^2.5",
         "ext-gd": "*",
-        "intervention/image": "^2.7"
+        "intervention/image": "^2.7",
+        "ramsey/uuid": "^4.7"
     },
     "license": "AGPL",
     "autoload": {
