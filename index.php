@@ -6,7 +6,12 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 require 'vendor/autoload.php';
 
-$file = new \Caio\Workshop\ImageFile;
+$dirs = [
+    'full_path' => 'assets/images/full/',
+    'minis_path' => 'assets/images/mini/'
+];
+
+$file = new ImageFile($dirs);
 
 Image::configure(['driver' => 'gd']);
 
