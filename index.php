@@ -8,7 +8,7 @@ require 'vendor/autoload.php';
 
 $dirs = [
     'full_path' => 'assets/images/full/',
-    'minis_path' => 'assets/images/mini/'
+    'minis_path' => 'assets/images/casos/'
 ];
 
 $file = new ImageFile($dirs);

@@ -3,6 +3,7 @@
 namespace Caio\Workshop;
 
 use Intervention\Image\ImageManagerStatic as Image;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Classe de interface com a biblioteca Intervention\Image.
@@ -51,24 +52,20 @@ class ImageFile
     function getMiniatures()
     {
         // Quantity detected automatically, just create as many sets of width/height as you need.
-        /**
-         * mantendo o padrão da samar: 3 miniaturas de 273x182, 150x150 e 50x50.
-         */
         $miniatures = [
             [
-                'width' => 300,
-                'height' => 200,
-                'method' => 'resize'
-            ],
-            [
-                'width' => 200,
-                'height' => 150,
+                'width' => 500,
+                'height' => 500,
                 'method' => 'fit'
             ]
         ];
         return $miniatures;
     }
 
+    /**
+     * @return array an array of strings, one string per miniature. Example:
+     * `[300x200, 380x240, 150x150]`
+     */
     function getMinisDimensions(): array
     {
         foreach ($this->getMiniatures() as $mini) {
@@ -157,7 +154,8 @@ class ImageFile
     function processAllFiles(array $files): void
     {
         for ($i = 0; $i < count($files["name"]); $i++) {
-            $name     = $files["name"][$i];
+            // $name     = $files["name"][$i];
+            $name = Uuid::uuid4();
             $tmp_name = $files["tmp_name"][$i];
             $this->processSingleFile($name, $tmp_name);
         }
