@@ -8,7 +8,7 @@ require 'vendor/autoload.php';
 
 $dirs = [
     'full_path' => 'assets/images/full/',
-    'minis_path' => 'assets/images/casos/'
+    'minis_path' => 'assets/images/mini/'
 ];
 
 $file = new ImageFile($dirs);
@@ -16,6 +16,7 @@ $file = new ImageFile($dirs);
 Image::configure(['driver' => 'gd']);
 
 isset($_FILES['files']) ? $file->processAllFiles($_FILES['files']) : 'Insira um arquivo';
+isset($_FILES['blur']) ? $file->blurFiles($_FILES['blur']) : 'Insira um arquivo para borrar';
 
 ?>
 
