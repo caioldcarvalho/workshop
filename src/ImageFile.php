@@ -23,7 +23,7 @@ class ImageFile
         'minis_path' => 'assets/images/mini/',
         // 'watermark_path' => 'assets/images/watermark.png'
     ];
-    
+
     /**
      * @param array $dirs Array with all relevant directories:
      * 	`full_path` path to output images;
@@ -33,12 +33,12 @@ class ImageFile
     public function __construct(array $dirs)
     {
         $this->dirs = array_combine(array_keys($this->dirs), $dirs);
-        $dirs = $this->dirs;
-        if(!is_dir($dirs['minis_path'])){
+        $dirs       = $this->dirs;
+        if (!is_dir($dirs['minis_path'])) {
             mkdir($dirs['minis_path'], 0777, true);
         }
         foreach ($this->getMinisDimensions() as $dimension) {
-            if(!is_dir($dirs['minis_path'] . $dimension . "/")){
+            if (!is_dir($dirs['minis_path'] . $dimension . "/")) {
                 mkdir($dirs['minis_path'] . $dimension . "/", 0777, true);
             }
         }
@@ -51,12 +51,25 @@ class ImageFile
      */
     function getMiniatures()
     {
-        // Quantity detected automatically, just create as many sets of width/height as you need.
+        /**
+         * Quantity detected automatically, just create as many sets of width/height as you need.
+         * To learn what each method does, please refer to makeMiniatures().
+         */
         $miniatures = [
             [
-                'width' => 500,
-                'height' => 500,
+                'width' => 300,
+                'height' => 200,
+                'method' => 'resize'
+            ],
+            [
+                'width' => 200,
+                'height' => 150,
                 'method' => 'fit'
+            ],
+            [
+                'width' => 354,
+                'height' => 236,
+                'method' => 'blur'
             ]
         ];
         return $miniatures;
@@ -92,9 +105,8 @@ class ImageFile
 
         foreach ($minis as $mini) {
 
-
             $miniature = match ($mini['method']) {
-                // Smallest dimension fits into dimension. Largest dimension gets cropped to respect aspect ratio.
+                // Smallest dimension fits into dimension. Largest dimension gets cropped to keep aspect ratio.
                 'fit' => Image::make($file)->fit($mini['width'], $mini['height']),
                 /**
                  * Resize the image so that the largest side fits within the limit; the smaller
@@ -105,10 +117,15 @@ class ImageFile
                         $constraint->aspectRatio();
                         $constraint->upsize();
                     }),
+                /**
+                 * Creates blurry background to fit a specific aspect ratio.
+                 * Similar to "resize", but fills area with blur.
+                 */
+                'blur' => $this->blurImage($file, $mini['width'], $mini['height']),
                 default => Image::make($file)->resize($mini['width'], $mini['height'], function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                })
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    })
             };
 
             /**
@@ -132,7 +149,7 @@ class ImageFile
 
         move_uploaded_file($tmp_name, $fullDir . $name);
 
-        $image     = Image::make($fullDir . $name);
+        $image = Image::make($fullDir . $name);
         // $watermark = Image::make($this->dirs['watermark_path'])->resize(128, 128, function ($constraint) {
         //     $constraint->aspectRatio();
         //     $constraint->upsize();
@@ -155,7 +172,7 @@ class ImageFile
     {
         for ($i = 0; $i < count($files["name"]); $i++) {
             // $name     = $files["name"][$i];
-            $name = Uuid::uuid4();
+            $name     = Uuid::uuid4();
             $tmp_name = $files["tmp_name"][$i];
             $this->processSingleFile($name, $tmp_name);
         }
@@ -185,6 +202,52 @@ class ImageFile
         $str = str_replace('--', '-', $str);
         $str = html_entity_decode($str);
         return $str;
+    }
+
+    function blurImage($sourcePath, $frameWidth = 354, $frameHeight = 236)
+    {
+        // Load the original image
+        $image = Image::make($sourcePath);
+    
+        // Create a new empty canvas for the final image
+        $finalImage = Image::canvas($frameWidth, $frameHeight);
+    
+        // Clone the original image
+        $blurredImage = clone $image;
+    
+        // Resize the cloned image to fit the frame (maintaining aspect ratio)
+        $blurredImage->fit($frameWidth, $frameHeight);
+    
+        // Apply the blur effect to the cloned image
+        $blurredImage->blur(50);
+    
+        // Insert the blurred and resized clone into the final image
+        $finalImage->insert($blurredImage, 'center');
+
+        $image->resize($frameWidth, $frameHeight, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
+    
+        // Insert the original image onto the blurred clone with respect to aspect ratio
+        $finalImage->insert($image, 'center');
+    
+        // Return the final image (don't forget to save it to final path)
+        return $finalImage;
+    }
+
+    function createBlurredFiles(array $files)
+    {
+        
+        for ($i = 0; $i < count($files["name"]); $i++) {
+            $name     = $files["name"][$i];
+            $tmp_name = $files["tmp_name"][$i];
+            $targetImagePath = "assets/images/mini/354x236/{$name}";
+            $img = $this->blurImage($tmp_name);
+            $img->save($targetImagePath);
+        }
+        // Usage example
+
     }
 
 }

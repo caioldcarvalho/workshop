@@ -16,7 +16,7 @@ $file = new ImageFile($dirs);
 Image::configure(['driver' => 'gd']);
 
 isset($_FILES['files']) ? $file->processAllFiles($_FILES['files']) : 'Insira um arquivo';
-isset($_FILES['blur']) ? $file->blurFiles($_FILES['blur']) : 'Insira um arquivo para borrar';
+isset($_FILES['blur']) ? $file->createBlurredFiles($_FILES['blur']) : 'Insira um arquivo para borrar';
 
 ?>
 
